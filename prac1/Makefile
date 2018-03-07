@@ -4,8 +4,16 @@
 CC = gcc
 CFLAGS  = -Wall -Wextra
 
-default: traceroute
+dafault: tracer
 
-traceroute: $(CC) $(CFLAGS) -o traceroute
+tracer: traceroute.o utils.o
+	$(CC) $(CFLAGS) -o traceroute traceroute.o utils.o
 
-clean:	$(RM) traceroute *.o *~
+traceroute.o: traceroute.c utils.h
+	$(CC) $(CFLAGS) -c traceroute.c
+
+utils.o: utils.c utils.h
+	$(CC) $(CFLAGS) -c utils.c
+
+clean:	
+	$(RM) traceroute *.o *~

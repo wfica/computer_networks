@@ -11,16 +11,8 @@
 #include <unistd.h>
 #include <assert.h>
 
-u_int16_t compute_icmp_checksum(const void *buff, int length)
-{
-    u_int32_t sum;
-    const u_int16_t *ptr = buff;
-    assert(length % 2 == 0);
-    for (sum = 0; length > 0; length -= 2)
-        sum += *ptr++;
-    sum = (sum >> 16) + (sum & 0xffff);
-    return (u_int16_t)(~(sum + (sum >> 16)));
-}
+#include "utils.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -96,10 +88,74 @@ int main(int argc, char *argv[])
         printf("Sending message failed.\n%s\n", strerror(errno));
         return 1;
     default:
-        printf("%u bytes sent, expected %u bytes.\n");
+        printf("%lu bytes sent, expected %lu bytes.\n", bytes_sent, sizeof(icmp_header));
         return 1;
     }
 
+    //---------------------------------------
+
+    // creating fd_set;
+    fd_set descriptors;
+    FD_ZERO(&descriptors);
+    FD_SET(sockfd, &descriptors);
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+
+    // blocking while waiting for a message
+    int ready = select(sockfd + 1, &descriptors, NULL, NULL, &tv);
+
+    switch (ready)
+    {
+    case 1:
+        break;
+    case 0:
+        printf("Timeout.\n");
+        return -1;
+    case -1:
+        printf("Error on select().\n%s\n", strerror(errno));
+        return -1;
+    }
+
+    struct sockaddr_in sender;
+    socklen_t sender_len = sizeof(sender);
+    u_int8_t buffer[IP_MAXPACKET];
+
+    // reading messages
+    ssize_t packet_len = recvfrom(sockfd, buffer, IP_MAXPACKET, MSG_DONTWAIT,
+                                  (struct sockaddr *)&sender, &sender_len);
+
+    // at least one message must be ready
+    if (packet_len <= 0)
+    {
+        printf("Could not read any message.\n");
+        return 1;
+    }
+    while (packet_len > 0)
+    {
+        char sender_ip_str[20];
+        const char *ip_ptr = inet_ntop(AF_INET, &(sender.sin_addr), sender_ip_str, sizeof(sender_ip_str));
+        if (ip_ptr == NULL)
+        {
+            printf("inet_ntop() error.\n%s\n", strerror(errno));
+            return 1;
+        }
+        printf("Received IP packet with ICMP content from: %s\n", sender_ip_str);
+        struct iphdr *ip_header = (struct iphdr *)buffer;
+        ssize_t ip_header_len = 4 * ip_header->ihl;
+
+        printf("IP header: ");
+        print_as_bytes(buffer, ip_header_len);
+        printf("\n");
+
+        printf("IP data:   ");
+        print_as_bytes(buffer + ip_header_len, packet_len - ip_header_len);
+        printf("\n\n");
+
+        // read remaining messages
+        packet_len = recvfrom(sockfd, buffer, IP_MAXPACKET, MSG_DONTWAIT,
+                              (struct sockaddr *)&sender, &sender_len);
+    }
 
     return 0;
 }
