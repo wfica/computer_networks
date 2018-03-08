@@ -15,7 +15,7 @@
 
 #include "utils.h"
 
-bool create_recipient(const char *target_ip, struct sockaddr_in * recipient)
+bool create_recipient(const char *target_ip, struct sockaddr_in *recipient)
 {
     bzero(recipient, sizeof(*recipient));
     recipient->sin_family = AF_INET;
@@ -35,13 +35,23 @@ bool create_recipient(const char *target_ip, struct sockaddr_in * recipient)
     return true;
 }
 
-struct icmp_time
+struct three_pck
 {
-    struct icmphdr hdr;
-    struct timeval tv; // tv.tv_sec  seconds, tv_tv.usec microseconds
+    int n_received;
+    struct in_addr sin_addr[3];
+    struct timeval sending_time[3];
+    struct timeval receiving_time[3];
 };
 
-bool send_package(const int sockfd, const int seq, const int ttl, const struct sockaddr_in *recipient)
+long int timeval_substract(const struct timeval *x, const struct timeval *y)
+{
+    struct timeval res;
+    timersub(x, y, &res);
+    return res.tv_usec;
+}
+
+bool send_package(const int sockfd, const int seq, const int ttl,
+                  const struct sockaddr_in *recipient, struct three_pck *replies)
 {
 
     // setting ttl
@@ -50,46 +60,45 @@ bool send_package(const int sockfd, const int seq, const int ttl, const struct s
         printf("Error while setting TTL.\n%s\n", strerror(errno));
         return false;
     }
+    //creating icmp header
+    struct icmphdr icmp_hdr;
+    icmp_hdr.type = ICMP_ECHO;
+    icmp_hdr.code = 0;
+    icmp_hdr.un.echo.id = getpid();
+    icmp_hdr.un.echo.sequence = seq;
+    icmp_hdr.checksum = 0;
+    icmp_hdr.checksum = compute_icmp_checksum((u_int16_t *)&icmp_hdr, sizeof(icmp_hdr));
 
-    struct icmp_time icmp_pck;
-    icmp_pck.hdr.type = ICMP_ECHO;
-    icmp_pck.hdr.code = 0;
-    icmp_pck.hdr.un.echo.id = getpid();
-    icmp_pck.hdr.un.echo.sequence = seq;
-    icmp_pck.hdr.checksum = 0;
-    if (gettimeofday(&icmp_pck.tv, NULL) < 0)
+    // sending message
+    ssize_t bytes_sent = sendto(sockfd, &icmp_hdr, sizeof(icmp_hdr), 0,
+                                (struct sockaddr *)recipient, sizeof(*recipient));
+
+    if (gettimeofday(&replies->sending_time[seq % 3], NULL) < 0)
     {
         printf("gettimeofday() error.\n%s\n", strerror(errno));
         return false;
     }
-    icmp_pck.hdr.checksum = compute_icmp_checksum((u_int16_t *)&icmp_pck, sizeof(icmp_pck));
-
-    // sending message
-    ssize_t bytes_sent = sendto(sockfd, &icmp_pck, sizeof(icmp_pck), 0,
-                                (struct sockaddr*)recipient, sizeof(*recipient));
-
     switch (bytes_sent)
     {
-    case sizeof(icmp_pck):
+    case sizeof(icmp_hdr):
         break;
     case -1:
         printf("Sending message failed.\n%s\n", strerror(errno));
         return false;
     default:
-        printf("%lu bytes sent, expected %lu bytes.\n", bytes_sent, sizeof(icmp_pck));
+        printf("%lu bytes sent, expected %lu bytes.\n", bytes_sent, sizeof(icmp_hdr));
         return false;
     }
     return true;
 }
 
-struct three_pck
-{
-    int n_received;
-    struct in_addr sin_addr[3];
-    struct timeval tv[3];
-};
-
-bool reveive_packages(const int sockfd, int seq, struct three_pck *replies)
+/*
+ returns 
+    1 if target has been reached
+    -1 if an error occured
+    0 otherwise
+*/
+int reveive_packages(const int sockfd, int seq, struct three_pck *replies)
 {
     // creating fd_set;
     fd_set descriptors;
@@ -114,42 +123,55 @@ bool reveive_packages(const int sockfd, int seq, struct three_pck *replies)
             break;
         case 0:
             //printf("Timeout.\n");
-            return true;
+            return 0;
         case -1:
             printf("Error on select().\n%s\n", strerror(errno));
-            return false;
+            return -1;
         }
 
+        bool target_reached = false;
         while (recvfrom(sockfd, buffer, IP_MAXPACKET, MSG_DONTWAIT,
                         (struct sockaddr *)&sender, &sender_len) > 0)
         {
             struct iphdr *ip_header = (struct iphdr *)buffer;
             u_int8_t *icmp_packet = buffer + 4 * ip_header->ihl;
             struct icmphdr *icmp_header = (struct icmphdr *)icmp_packet;
-            if (icmp_header->type == ICMP_ECHOREPLY &&
-                icmp_header->un.echo.id == getpid() &&
+            if( icmp_header->type != ICMP_TIME_EXCEEDED && icmp_header->type != ICMP_ECHOREPLY)
+                continue;
+            if(icmp_header->type == ICMP_TIME_EXCEEDED){
+                u_int8_t *ptr = (u_int8_t *) icmp_header;
+                ptr += 8; // move by 8 bytes
+                ip_header = (struct iphdr *) ptr;
+                icmp_packet = ptr + 4 * ip_header->ihl;
+                icmp_header = (struct icmphdr*)icmp_packet;
+            }
+            if (icmp_header->un.echo.id == getpid() &&
                 icmp_header->un.echo.sequence >= seq &&
                 icmp_header->un.echo.sequence < seq + 3)
             {
                 replies->sin_addr[replies->n_received] = sender.sin_addr;
-
+                replies->receiving_time[icmp_header->un.echo.sequence % 3] = tv;
                 replies->n_received++;
                 if (replies->n_received == 3)
-                    return true;
+                    return target_reached ? 1 : 0;
+                target_reached = target_reached || (icmp_header->type == ICMP_ECHOREPLY) ;
             }
         }
     }
-    return true;
+    return 0;
 }
 
 void print_replies(const struct three_pck *replies)
 {
+    printf("received %d.\n", replies->n_received);
     for (int i = 0; i < replies->n_received; ++i)
     {
         char sender_ip_str[20];
         inet_ntop(AF_INET, &(replies->sin_addr[i]), sender_ip_str,
                   sizeof(sender_ip_str));
-        printf("Received IP packet with ICMP content from: %s\n", sender_ip_str);
+        printf("Received IP packet with ICMP content from: %s ", sender_ip_str);
+        long t = timeval_substract(&replies->sending_time[i], &replies->receiving_time[i]) / 10000;
+        printf(" %ld ms\n", t );
     }
 }
 
@@ -173,17 +195,21 @@ int main(int argc, char *argv[])
 
     for (int seq = 0, ttl = 1; ttl <= 30; ++ttl, seq += 3)
     {
-        for (int i = 0; i < 3; ++i)
-            if (send_package(sockfd, seq + i, ttl, &recipient) == false)
-                return 1;
-
         struct three_pck replies;
         replies.n_received = 0;
-        if (reveive_packages(sockfd, seq, &replies) == false)
+
+        for (int i = 0; i < 3; ++i)
+            if (send_package(sockfd, seq + i, ttl, &recipient, &replies) == false)
+                return 1;
+
+        int rp = reveive_packages(sockfd, seq, &replies);
+        if (rp < 0)
             return 1;
 
         print_replies(&replies);
         printf("\n\n");
+        if (rp == 1)
+            break;
     }
     return 0;
 }
