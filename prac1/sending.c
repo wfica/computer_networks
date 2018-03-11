@@ -27,15 +27,14 @@ bool create_recipient(const char *target_ip, struct sockaddr_in *recipient)
     case 1:
         break;
     case 0:
-        printf("inet_pton() input is not a vaild IP dotted string.\n");
+        fprintf(stderr, "inet_pton() input is not a vaild IP dotted string.\n");
         return false;
     case -1:
-        printf("inet_pton() error.\n%s\n", strerror(errno));
+        fprintf(stderr, "inet_pton() error.\n%s\n", strerror(errno));
         return false;
     }
     return true;
 }
-
 
 // sends package and, on success, updates replies (adds time of sending)
 // returns whether a package was sent successfully
@@ -46,7 +45,7 @@ bool send_package(const int sockfd, const int seq, const int ttl,
     // setting ttl
     if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int)) == -1)
     {
-        printf("Error while setting TTL.\n%s\n", strerror(errno));
+        fprintf(stderr, "Error while setting TTL.\n%s\n", strerror(errno));
         return false;
     }
     //creating icmp header
@@ -64,19 +63,19 @@ bool send_package(const int sockfd, const int seq, const int ttl,
 
     if (gettimeofday(&replies->sending_time[seq % 3], NULL) < 0)
     {
-        printf("gettimeofday() error.\n%s\n", strerror(errno));
+        fprintf(stderr, "gettimeofday() error.\n%s\n", strerror(errno));
         return false;
     }
-   // print_time(&replies->sending_time[seq % 3]);
+    // print_time(&replies->sending_time[seq % 3]);
     switch (bytes_sent)
     {
     case sizeof(icmp_hdr):
         break;
     case -1:
-        printf("Sending message failed.\n%s\n", strerror(errno));
+        fprintf(stderr, "Sending message failed.\n%s\n", strerror(errno));
         return false;
     default:
-        printf("%lu bytes sent, expected %lu bytes.\n", bytes_sent, sizeof(icmp_hdr));
+        fprintf(stderr, "%lu bytes sent, expected %lu bytes.\n", bytes_sent, sizeof(icmp_hdr));
         return false;
     }
     return true;

@@ -19,7 +19,7 @@ u_int16_t compute_icmp_checksum(const void *buff, int length);
 void print_as_bytes(unsigned char *buff, ssize_t length);
 bool check_input(int argc, char *argv[]);
 void print_time(const struct timeval *tv);
-void  print_replies(const struct three_pck *replies, const int ttl);
+void print_replies(const struct three_pck *replies, const int ttl);
 long int timeval_substract(const struct timeval *x, const struct timeval *y);
 
 #endif

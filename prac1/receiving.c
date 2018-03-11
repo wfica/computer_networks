@@ -37,19 +37,18 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
         int ready = select(sockfd + 1, &descriptors, NULL, NULL, &tv);
         if (gettimeofday(&curr_time, NULL) < 0)
         {
-            printf("gettimeofday() error.\n%s\n", strerror(errno));
+            fprintf(stderr, "gettimeofday() error.\n%s\n", strerror(errno));
             return false;
         }
-       // print_time(&curr_time);
         switch (ready)
         {
         case 1:
             break;
         case 0:
-            //printf("Timeout.\n");
+            fprintf(stderr, "Timeout.\n");
             return 0;
         case -1:
-            printf("Error on select().\n%s\n", strerror(errno));
+            fprintf(stderr, "Error on select().\n%s\n", strerror(errno));
             return -1;
         }
 
@@ -62,7 +61,6 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
             struct icmphdr *icmp_header = (struct icmphdr *)icmp_packet;
             if (icmp_header->type != ICMP_TIME_EXCEEDED && icmp_header->type != ICMP_ECHOREPLY)
                 continue;
-           // printf("!!!\n");
             target_reached = target_reached || (icmp_header->type == ICMP_ECHOREPLY);
             if (icmp_header->type == ICMP_TIME_EXCEEDED)
             {

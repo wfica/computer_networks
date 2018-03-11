@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (sockfd == -1)
     {
-        printf("Error while opening socket.\n%s\n", strerror(errno));
+        fprintf(stderr, "Error while opening socket.\n%s\n", strerror(errno));
         return 1;
     }
 
