@@ -2,6 +2,8 @@
         "files.associations": {
                 "*.ml": "ocaml",
                 "*.mli": "ocaml",
-                "stdlib.h": "c"
+                "stdlib.h": "c",
+                "inet.h": "c",
+                "stdio.h": "c"
         }
 }
