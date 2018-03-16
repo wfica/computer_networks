@@ -55,7 +55,7 @@ void print_time(const struct timeval *tv)
 {
     printf(" %ld s  %ld us\n", tv->tv_sec, tv->tv_usec);
 }
-// returns difference in time in ms [ms = 0.01 s]
+// returns difference in time in ms [1 ms = 0.01 s]
 long int timeval_substract(const struct timeval *x, const struct timeval *y)
 {
     struct timeval res;
@@ -73,7 +73,7 @@ void print_replies(const struct three_pck *replies, const int ttl)
         return;
     }
     for (int i = 0; i < 3; ++i)
-        inet_ntop(AF_INET, &(replies->sin_addr[i]), sender_ip_str[i], sizeof(sender_ip_str[i]));
+        assert(inet_ntop(AF_INET, &(replies->sin_addr[i]), sender_ip_str[i], sizeof(sender_ip_str[i])));
 
     printf("%s ", sender_ip_str[0]);
     if (strcmp(sender_ip_str[0], sender_ip_str[1]) != 0)

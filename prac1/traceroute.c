@@ -17,6 +17,28 @@
 #include "sending.h"
 #include "receiving.h"
 
+// returns
+//     -1  on error
+//      1  on reaching the target
+//      0  otherwise
+
+int send_and_receive_with_fixed_ttl(const int sockfd, const int ttl, const int seq, const struct sockaddr_in *recipient)
+{
+    struct three_pck replies;
+    replies.n_received = 0;
+
+    for (int i = 0; i < 3; ++i)
+        if (send_package(sockfd, seq + i, ttl, recipient, &replies) == false)
+            return -1;
+
+    int rp = receive_packages(sockfd, seq, &replies);
+    if (rp < 0)
+        return -1;
+
+    print_replies(&replies, ttl);
+    return (rp == 1);
+}
+
 int main(int argc, char *argv[])
 {
     if (!check_input(argc, argv))
@@ -38,20 +60,9 @@ int main(int argc, char *argv[])
     const int loops = 30;
     for (int seq = 0, ttl = 1; ttl <= loops; ++ttl, seq += 3)
     {
-        struct three_pck replies;
-        replies.n_received = 0;
-
-        for (int i = 0; i < 3; ++i)
-            if (send_package(sockfd, seq + i, ttl, &recipient, &replies) == false)
-                return 1;
-
-        int rp = receive_packages(sockfd, seq, &replies);
-        if (rp < 0)
-            return 1;
-
-        print_replies(&replies, ttl);
-        if (rp == 1)
+        if (send_and_receive_with_fixed_ttl(sockfd, ttl, seq, &recipient) != 0)
             break;
     }
+    close(sockfd);
     return 0;
 }

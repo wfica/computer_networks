@@ -16,6 +16,10 @@
 #include "utils.h"
 #include "receiving.h"
 
+// returns
+//          -1 on error
+//          0 if target ip has NOT been reached
+//          1 if target ip has been reached
 int receive_packages(const int sockfd, int seq, struct three_pck *replies)
 {
     // creating fd_set;
@@ -31,6 +35,7 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
     socklen_t sender_len = sizeof(sender);
     u_int8_t buffer[IP_MAXPACKET];
 
+    bool target_reached = false;
     while (true)
     {
         // blocking while waiting for a message
@@ -45,14 +50,13 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
         case 1:
             break;
         case 0:
-            fprintf(stderr, "Timeout.\n");
+            //fprintf(stderr, "Timeout.\n");
             return 0;
         case -1:
             fprintf(stderr, "Error on select().\n%s\n", strerror(errno));
             return -1;
         }
 
-        bool target_reached = false;
         while (recvfrom(sockfd, buffer, IP_MAXPACKET, MSG_DONTWAIT,
                         (struct sockaddr *)&sender, &sender_len) > 0)
         {
@@ -61,7 +65,6 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
             struct icmphdr *icmp_header = (struct icmphdr *)icmp_packet;
             if (icmp_header->type != ICMP_TIME_EXCEEDED && icmp_header->type != ICMP_ECHOREPLY)
                 continue;
-            target_reached = target_reached || (icmp_header->type == ICMP_ECHOREPLY);
             if (icmp_header->type == ICMP_TIME_EXCEEDED)
             {
                 u_int8_t *ptr = (u_int8_t *)icmp_header;
@@ -74,6 +77,7 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
                 icmp_header->un.echo.sequence >= seq &&
                 icmp_header->un.echo.sequence < seq + 3)
             {
+                target_reached = target_reached || (icmp_header->type == ICMP_ECHOREPLY);
                 replies->sin_addr[replies->n_received] = sender.sin_addr;
                 replies->receiving_time[icmp_header->un.echo.sequence % 3] = curr_time;
                 replies->n_received++;
@@ -82,5 +86,5 @@ int receive_packages(const int sockfd, int seq, struct three_pck *replies)
             }
         }
     }
-    return 0;
+    return target_reached;
 }

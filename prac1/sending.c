@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "sending.h"
 
+// returns true on successfully creating a recipient
 bool create_recipient(const char *target_ip, struct sockaddr_in *recipient)
 {
     bzero(recipient, sizeof(*recipient));
@@ -66,7 +67,6 @@ bool send_package(const int sockfd, const int seq, const int ttl,
         fprintf(stderr, "gettimeofday() error.\n%s\n", strerror(errno));
         return false;
     }
-    // print_time(&replies->sending_time[seq % 3]);
     switch (bytes_sent)
     {
     case sizeof(icmp_hdr):
