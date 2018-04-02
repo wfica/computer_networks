@@ -21,8 +21,8 @@
 //     -1  on error
 //      1  on reaching the target
 //      0  otherwise
-
-int send_and_receive_with_fixed_ttl(const int sockfd, const int ttl, const int seq, const struct sockaddr_in *recipient)
+int send_and_receive_with_fixed_ttl(const int sockfd, const int ttl, const int seq,
+                                    const struct sockaddr_in *recipient)
 {
     struct three_pck replies;
     replies.n_received = 0;
@@ -63,6 +63,11 @@ int main(int argc, char *argv[])
         if (send_and_receive_with_fixed_ttl(sockfd, ttl, seq, &recipient) != 0)
             break;
     }
-    close(sockfd);
+    
+    if (close(sockfd) < 0)
+    {
+        fprintf(stderr, "Error while closing socket.\n%s\n", strerror(errno));
+        return 1;
+    }
     return 0;
 }

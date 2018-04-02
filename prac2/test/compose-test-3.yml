@@ -1,0 +1,30 @@
+version: '2'
+services:
+  a:
+    build: .
+    environment:
+      - MACHINE_NAME=a
+      - TEST_SUITE=test-0
+    volumes:
+      - .:/sources
+    networks:
+      ab:
+        ipv4_address: 12.0.1.2
+  b:
+    build: .
+    environment:
+      - MACHINE_NAME=b
+      - TEST_SUITE=test-0
+    volumes:
+      - .:/sources
+    networks:
+      ab:
+        ipv4_address: 12.0.1.3
+networks:
+  ab:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 12.0.1.0/24

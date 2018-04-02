@@ -4,6 +4,7 @@
                 "*.mli": "ocaml",
                 "stdlib.h": "c",
                 "inet.h": "c",
-                "stdio.h": "c"
+                "stdio.h": "c",
+                "iosfwd": "cpp"
         }
 }

@@ -1,0 +1,14 @@
+{
+        "files.associations": {
+                "*.ml": "ocaml",
+                "*.mli": "ocaml",
+                "cerrno": "c",
+                "cstdlib": "cpp",
+                "array": "cpp",
+                "initializer_list": "cpp",
+                "valarray": "cpp",
+                "ostream": "cpp",
+                "functional": "cpp",
+                "iostream": "cpp"
+        }
+}
