@@ -4,10 +4,11 @@
 CC = g++
 CFLAGS  =  -O2 -std=gnu++11 -Wall -Wextra -Wfloat-equal -Wundef -Wunreachable-code
 
-dafault: main
+default: transport.cpp  utils.o 
+	$(CC) $(CFLAGS) utils.o transport.cpp -o transport
 
-main: transport.cpp
-	$(CC) $(CFLAGS) transport.cpp -o transport
+utils.o: utils.cpp utils.h
+	$(CC) $(CFLAGS) -c utils.cpp
 
 clean:	
 	$(RM) -f *.o *~
