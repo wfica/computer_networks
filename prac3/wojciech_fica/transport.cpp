@@ -1,3 +1,6 @@
+// Wojciech Fica
+// 280180
+
 #include <bits/stdc++.h>
 
 #include <arpa/inet.h>
@@ -11,12 +14,14 @@ using namespace std;
 
 unordered_map<size_t, file_part> window;
 
+
 size_t save_data(FILE *pFile, size_t bytes_received)
 {
     unordered_map<size_t, file_part>::iterator it = window.find(bytes_received);
     while (it != window.end())
     {
-        fwrite(it->second.buffer, sizeof(char), it->second.len, pFile);
+        if( fwrite(it->second.buffer, sizeof(char), it->second.len, pFile) != it->second.len)
+            printf("fwrite error\n");
         bytes_received += it->second.len;
         window.erase(it);
         it = window.find(bytes_received);
@@ -94,3 +99,29 @@ int main(int argc, char *argv[])
     fclose(pFile);
     return EXIT_SUCCESS;
 }
+
+/*
+#!/bin/bash
+
+PORT=40003
+
+cd wojciech_fica
+make
+
+{ /usr/bin/time -v ./transport $PORT out $1 > /dev/null ; } 2> ../my_time 
+mv out ../
+cd ../
+echo "my stat"
+grep "Elapsed" my_time
+grep "Maximum resident set size" my_time
+
+{ /usr/bin/time -v ./transport-faster $PORT out_ref $1 > /dev/null ; } 2> mbi_time
+
+
+echo "transport-faster stat"
+grep "Elapsed" mbi_time
+grep "Maximum resident set size" mbi_time
+
+diff --brief out out_ref
+rm out out_ref mbi_time my_time
+*/

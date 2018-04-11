@@ -11,7 +11,7 @@ utils.o: utils.cpp utils.h
 	$(CC) $(CFLAGS) -c utils.cpp
 
 clean:	
-	$(RM) -f *.o *~
+	$(RM) *.o *~
 
 distclean:	
-	$(RM) -f transport *.o *~
+	$(RM) transport *.o *~

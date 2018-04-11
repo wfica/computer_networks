@@ -17,7 +17,7 @@
 struct file_part
 {
     size_t len;
-    char buffer[MX_ALLOWED_LEN + 24];
+    char buffer[MX_ALLOWED_LEN + 16];
     file_part(char *data_start, size_t length);
 };
 
