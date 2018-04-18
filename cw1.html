@@ -1,0 +1,812 @@
+<h4 id="wojciech-fica">Wojciech Fica</h4>
+<h5 id="zad.-1.">Zad. 1.</h5>
+<table>
+<thead>
+<tr class="header">
+<th>adres IP</th>
+<th>adres sieci</th>
+<th>adres rozgłoszeniowy</th>
+<th>adres innego komputera</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10.1.2.3/8</td>
+<td>10.0.0.0</td>
+<td>10.255.255.255</td>
+<td>10.1.2.4</td>
+</tr>
+<tr class="even">
+<td>156.17.0.0/16</td>
+<td>156.17.0.0</td>
+<td>156.17.255.255</td>
+<td>156.17.1.1.</td>
+</tr>
+<tr class="odd">
+<td>99.99.99.99/27</td>
+<td>99.99.99.96</td>
+<td>99.99.99.127</td>
+<td>99.99.99.100</td>
+</tr>
+<tr class="even">
+<td>156.17.64.4/30</td>
+<td>156.17.64.4</td>
+<td>156.17.64.7</td>
+<td>156.17.64.6</td>
+</tr>
+<tr class="odd">
+<td>123.123.123.123/32</td>
+<td>123.123.123.123</td>
+<td>123.123.123.123</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h5 id="zad.-2.">Zad. 2.</h5>
+<p>Przykładowy podział:</p>
+<table>
+<thead>
+<tr class="header">
+<th>adres sieci</th>
+<th>liczba adresów w podsieci</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10.10.0.0/17</td>
+<td>2^15</td>
+</tr>
+<tr class="even">
+<td>10.10.128.0/19</td>
+<td>2^13</td>
+</tr>
+<tr class="odd">
+<td>10.10.160.0/19</td>
+<td>2^13</td>
+</tr>
+<tr class="even">
+<td>10.10.192.0/19</td>
+<td>2^13</td>
+</tr>
+<tr class="odd">
+<td>10.10.224.0/19</td>
+<td>2^13</td>
+</tr>
+</tbody>
+</table>
+<p>Najmniejsza podsieć może mieć 2^12 adresów. Każda z pięciu podsieci jest jednoznacznie wyznaczona przez pierwszy zapalony bit w 3 bajcie, tj.</p>
+<table>
+<thead>
+<tr class="header">
+<th>adres sieci</th>
+<th>liczba adresów w podsieci</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10.10.128.0/17</td>
+<td>2^15</td>
+</tr>
+<tr class="even">
+<td>10.10.64.0/18</td>
+<td>2^14</td>
+</tr>
+<tr class="odd">
+<td>10.10.32.0/19</td>
+<td>2^13</td>
+</tr>
+<tr class="even">
+<td>10.10.16.0/20</td>
+<td>2^12</td>
+</tr>
+<tr class="odd">
+<td>10.10.0.0/20</td>
+<td>2^12</td>
+</tr>
+</tbody>
+</table>
+<p>Mniej się nie da. Dowód: Załóżmy, że istnieją 4 liczby naturalne <span class="math inline"><em>a</em> ≤ <em>b</em> ≤ <em>c</em> ≤ <em>d</em> ≤ <em>e</em></span>, że a &lt; 12. Wtedy <br /><span class="math display">2<sup>16</sup> = 2<sup><em>a</em></sup> + 2<sup><em>b</em></sup> + 2<sup><em>c</em></sup> + 2<sup><em>d</em></sup> + 2<sup><em>e</em></sup> = 2<sup><em>a</em></sup>(1 + 2<sup><em>b</em> − <em>a</em></sup> + 2<sup><em>c</em> − <em>a</em></sup> + 2<sup><em>d</em> − <em>a</em></sup> + 2<sup><em>e</em> − <em>a</em></sup>)</span><br /> Zatem <br /><span class="math display">2<sup>16 − <em>a</em></sup> = 1 + 2<sup><em>b</em> − <em>a</em></sup> + 2<sup><em>c</em> − <em>a</em></sup> + 2<sup><em>d</em> − <em>a</em></sup> + 2<sup><em>e</em> − <em>a</em></sup></span><br /> Skoro lewa strona jest parzysta to <span class="math inline"><em>b</em> − <em>a</em> = 0</span>. Podstawiając <span class="math inline"><em>b</em> = <em>a</em></span> do równania wyżej i dzieląc przez <span class="math inline">2</span> otrzymamy <br /><span class="math display">2<sup>15 − <em>a</em></sup> = 1 + 2<sup><em>c</em> − <em>a</em> − 1</sup> + 2<sup><em>d</em> − <em>a</em> − 1</sup> + 2<sup><em>e</em> − <em>a</em> − 1</sup></span><br /> Zatem <span class="math inline"><em>c</em> − <em>a</em> − 1 = 0</span>. Podobnie wnioskujemy <span class="math inline"><em>d</em> − <em>a</em> − 2 = 0</span> i <span class="math inline"><em>e</em> − <em>a</em> − 3 = 0</span>. Zatem mamy <span class="math inline">2<sup>16</sup> = 2<sup><em>a</em></sup> + 2<sup><em>a</em></sup> + 2<sup><em>a</em> + 1</sup> + 2<sup><em>a</em> + 2</sup> + 2<sup><em>a</em> + 3</sup></span>, skąd otrzymujemy <span class="math inline"><em>a</em> = 12</span>. Sprzeczonść.</p>
+<h5 id="zad.-3.">Zad. 3.</h5>
+<table>
+<thead>
+<tr class="header">
+<th>Lp.</th>
+<th>podsieć binarnie</th>
+<th>podsieć</th>
+<th>dokąd wysyłać</th>
+<th>komentarz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>00000000.00000000.00000000.00000000</td>
+<td>0.0.0.0/0</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td><strong>00001010.00000000.0000000</strong>0.00000000</td>
+<td>10.0.0.0/23</td>
+<td>B</td>
+<td>merge(1)</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td><strong>00001010.00000000.00000010</strong>.00000000</td>
+<td>10.0.2.0/24</td>
+<td>B</td>
+<td>merge(0), merge(1)</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><strong>00001010.00000000.00000011</strong>.00000000</td>
+<td>10.0.3.0/24</td>
+<td>B</td>
+<td>merge(0)</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td><strong>00001010.00000000.00000001</strong>.00000000</td>
+<td>10.0.1.0/24</td>
+<td>C</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><strong>00001010.00000000.00000000.1</strong>0000000</td>
+<td>10.0.0.128/25</td>
+<td>B</td>
+<td>redundantny</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td><strong>00001010.00000000.00000001.00001</strong>000</td>
+<td>10.0.1.8/29</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td><strong>00001010.00000000.00000001.00010</strong>000</td>
+<td>10.0.1.16/29</td>
+<td>B</td>
+<td>merge(2)</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td><strong>00001010.00000000.00000001.00011</strong>000</td>
+<td>10.0.1.24/29</td>
+<td>B</td>
+<td>merge(2)</td>
+</tr>
+</tbody>
+</table>
+<p>Powyższą tablicę redukujemy do poniższej.</p>
+<table>
+<thead>
+<tr class="header">
+<th>podsieć binarnie</th>
+<th>podsieć</th>
+<th>dokąd wysyłać</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>00000000.00000000.00000000.00000000</td>
+<td>0.0.0.0/0</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td><strong>00001010.00000000.000000</strong>00.00000000</td>
+<td>10.0.0.0/22</td>
+<td>B</td>
+</tr>
+<tr class="odd">
+<td><strong>00001010.00000000.00000001</strong>.00000000</td>
+<td>10.0.1.0/24</td>
+<td>C</td>
+</tr>
+<tr class="even">
+<td><strong>00001010.00000000.00000001.00001</strong>000</td>
+<td>10.0.1.8/29</td>
+<td>B</td>
+</tr>
+<tr class="odd">
+<td><strong>00001010.00000000.00000001.0001</strong>0000</td>
+<td>10.0.1.16/28</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<h5 id="zad.-4.">Zad. 4.</h5>
+<p>Postępujemy podobnie jak w zadaniu wyżej.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Lp.</th>
+<th>podsieć binarnie</th>
+<th>podsieć</th>
+<th>dokąd wysyłać</th>
+<th>komentarz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>00000000.00000000.00000000.00000000</td>
+<td>0.0.0.0/0</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td><strong>00001010</strong>.00000000.00000000.00000000</td>
+<td>10.0.0.0/8</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td><strong>00001010.00000011.00000000</strong>.00000000</td>
+<td>10.3.0.0/24</td>
+<td>C</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><strong>00001010.00000011.00000000.001</strong>00000</td>
+<td>10.3.0.32/27</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td><strong>00001010.00000011.00000000.010</strong>00000</td>
+<td>10.3.0.64/27</td>
+<td>B</td>
+<td>merge(0)</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><strong>00001010.00000011.00000000.011</strong>00000</td>
+<td>10.3.0.96/27</td>
+<td>B</td>
+<td>merge(0)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>podsieć binarnie</th>
+<th>podsieć</th>
+<th>dokąd wysyłać</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>00000000.00000000.00000000.00000000</td>
+<td>0.0.0.0/0</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td><strong>00001010</strong>.00000000.00000000.00000000</td>
+<td>10.0.0.0/8</td>
+<td>B</td>
+</tr>
+<tr class="odd">
+<td><strong>00001010.00000011.00000000</strong>.00000000</td>
+<td>10.3.0.0/24</td>
+<td>C</td>
+</tr>
+<tr class="even">
+<td><strong>00001010.00000011.00000000.001</strong>00000</td>
+<td>10.3.0.32/27</td>
+<td>B</td>
+</tr>
+<tr class="odd">
+<td><strong>00001010.00000011.00000000.01</strong>000000</td>
+<td>10.3.0.64/26</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<h5 id="zad.-5.">Zad. 5.</h5>
+<p>Wystarczy posortować wpisy po długości maski - od najdłuższych masek do najkrótszych. Najdłuższy wpis w tablicy jaki się dopasuje do danej sieci dopasuje się wtedy pierwszy.</p>
+<h5 id="zad.-6.">Zad. 6.</h5>
+<p>Krok 0.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td></td>
+<td>1</td>
+<td>-</td>
+<td></td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td></td>
+<td></td>
+<td></td>
+<td>-</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td></td>
+<td></td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td></td>
+<td></td>
+<td>1</td>
+<td></td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Krok 1.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td></td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td></td>
+<td></td>
+<td>2</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td></td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td></td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Krok 2.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td></td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td></td>
+<td>3</td>
+<td>2</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td></td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Krok 3.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h5 id="zad.-7.">Zad. 7.</h5>
+<p>Krok 0.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td><strong>1</strong></td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td><strong>1</strong></td>
+<td>3</td>
+<td>2</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Krok 1.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trasa do A</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>trasa do B</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do C</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do D</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>-</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>trasa do E</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>-</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>trasa do F</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>trasa do S</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h5 id="zad.-8.">Zad. 8.</h5>
+<p>Przedstawiamy poniżej jak rosyłana jest informacja o doległościach do E po sieci. Zakładamy, że pozostałe pakiety się zgubiły.</p>
+<ul>
+<li>D zauważa, że zespuło się połączenie do E</li>
+<li>D wysyła do B i C informację &quot;mam do E odległość nieskończoną&quot;</li>
+<li>B i C uaktualniają sobie odlegość do E na nieskończoną</li>
+<li>A wysła do C informację &quot;mam do E odległość 3&quot;</li>
+<li>A wysła do B informację &quot;mam do E odległość nieskończoną&quot; (zatruwanie ścieżek)</li>
+<li>C uaktualnia sobie odlegość do E na 4, B tego nie robi bo stosujemy zatruwanie ścieżek</li>
+<li>C wysyła do D informację &quot;mam do E odległość 4&quot;</li>
+<li>B wysyła do A informację &quot;mam do E odległość nieskończoną&quot;</li>
+<li>A uaktualnia sobie odlegość do E na nieskonczona</li>
+<li>C wysyła do D informację &quot;mam do E odległość 4&quot;</li>
+<li>D uaktualnia sobie odlegość do E na 5</li>
+<li>A wysyła do C informację &quot;mam do E odległość nieskończoną&quot;</li>
+<li>C uaktualnia sobie odlegość do E na nieskończoną</li>
+<li>D wysyła do A informację &quot;mam do E odległość 5&quot;</li>
+<li>...</li>
+</ul>
