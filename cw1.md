@@ -97,7 +97,7 @@ Postępujemy podobnie jak w zadaniu wyżej.
 
 ##### Zad. 5.
 
-Wystarczy posortować wpisy po długości maski - od najdłuższych masek do najkrótszych. Najdłuższy wpis w tablicy jaki się dopasuje do danej sieci dopasuje się wtedy pierwszy.
+Wystarczy posortować wpisy po długości maski - od najdłuższych masek do najkrótszych. Najdłuższy wpis w tablicy, jaki się dopasuje do danej sieci, dopasuje się wtedy pierwszy.
 
 ##### Zad. 6.
 
@@ -189,10 +189,10 @@ Przedstawiamy poniżej jak rosyłana jest informacja o doległościach do E po s
 - B i C uaktualniają sobie odlegość do E na nieskończoną
 - A wysła do C informację "mam do E odległość 3"
 - A wysła do B informację "mam do E odległość nieskończoną" (zatruwanie ścieżek)
-- C uaktualnia sobie odlegość do E na 4, B tego nie robi bo stosujemy zatruwanie ścieżek
+- C uaktualnia sobie odlegość do E na 4, B tego nie robi, bo stosujemy zatruwanie ścieżek
 - C wysyła do D informację "mam do E odległość 4"
 - B wysyła do A informację "mam do E odległość nieskończoną"
-- A uaktualnia sobie odlegość do E na nieskonczona
+- A uaktualnia sobie odlegość do E na nieskończoną
 - C wysyła do D informację "mam do E odległość 4"
 - D uaktualnia sobie odlegość do E na 5
 - A wysyła do C informację "mam do E odległość nieskończoną"
@@ -201,26 +201,32 @@ Przedstawiamy poniżej jak rosyłana jest informacja o doległościach do E po s
 - ...
 
 ##### Zad. 9.
+Algorytm stanu łączy: 
+
+- Powiadom wszystkich o swoim bezpośrednim sąsiedztwie. 
+- Na podstawie sąsiedztw zbuduj graf sieci i oblicz lokalnie najkrótsze ścieżki
+
+Informacja jest wysyłana na początku + przy zmianie + co jakiś czas (30 min.)
 
 Rozważmy sieć reprezentowaną przez graf składający się z następujących krawędzi:
-- A --- B o "odległości" 1
-- B --- C o "odległości" 1
-- C --- D o "odległości" 10
-- D --- A o "odległości" 10
 
-Następuje przerwanie sieci A --- B. Router B chce wysłać pakiet do routera A, ale wie, że bezpośrednia sieć uległa awarii, więc wysyła go przez router C. Router C przesyła otrzymany pakiet przez router B (bo tam ma najkrócej - jeszcze nie wie o awarii). Póki kompuer C nie dowie się o awarii, to pakiet będzie krążył między B a C.
+- A --- B o "odległości" 1
+- B --- C o "odległości" 10
+- C --- A o "odległości" 1
+
+Następuje przerwanie sieci A --- B. A i B dowiadują się jako pierwsze i uaktualniają sobie odległości do wszystkich wierzchołków w sieci. W momencie, gdy C nie dowiedział się jeszcze o awarii, ma wpisaną odległość do B równą 2 przez A. Ale w tym momencie A ma wpisaną odległość do B równą 11 przez C. Zatem mamy cykl.
 
 ##### Zad. 10.
 
-Rozważmy graf z wierzchokami: $s$ - startowy, $p$ - przedostatni, $k$ - końcowy, $a_i$ i $b_i$ dla $i = 1, ..., \lfloor\frac{n}{2}\rfloor$ i krawędziami:
+Rozważmy graf z wierzchołkami: $s$ - startowy, $p$ - przedostatni, $k$ - końcowy, $a_i$ i $b_i$ dla $i = 1, ..., \lfloor\frac{n}{2}\rfloor$ i krawędziami:
 
-- s --> $a_1$, s --> $b_1$
-- $a_i$ --> $a_{i+1}$, $a_i$ --> $b_{i+1}$
-- $b_i$ --> $a_{i+1}$, $b_i$ --> $b_{i+1}$
-- $b_{\lfloor\frac{n}{2}\rfloor}$ --> $p$
-- $a_{\lfloor\frac{n}{2}\rfloor}$ --> $p$
-- $p$ --> $k$
+- s &rarr; $a_1$, s &rarr; $b_1$
+- $a_i$ &rarr; $a_{i+1}$, $a_i$ &rarr; $b_{i+1}$
+- $b_i$ &rarr; $a_{i+1}$, $b_i$ &rarr; $b_{i+1}$
+- $b_{\lfloor\frac{n}{2}\rfloor}$ &rarr; $p$
+- $a_{\lfloor\frac{n}{2}\rfloor}$ &rarr; $p$
+- $p$ &rarr; $k$
 
-Wtedy czas 
+Wtedy przesyłanie informacji od routera $s$ do $k$ zajmie  $2^{\lfloor\frac{n}{2}\rfloor - 1}$. Aby to udowodnić wystarczy zauważyć, że do wierzchołków $a_i$ i $b_i$ zostanie dostarczonych po $2^{i-1}$ pakietów. Zatem do wierzchołka $p$ dotrze $2^{\lfloor\frac{n}{2}\rfloor}$ pakietów więc co najmniej tyle samo czasu zajmie mu przesłanie ich do wierzchołka $k$. 
 
 
