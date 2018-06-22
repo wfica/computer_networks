@@ -1,9 +1,15 @@
 // Wojciech Fica
 // 280180
+
+#include <bits/stdc++.h>
+
+#include <arpa/inet.h>
+#include <netinet/ip.h>
+#include <unistd.h>
+
 #include "utils.h"
 
 using namespace std;
-
 
 unordered_map<size_t, file_part> window;
 
@@ -12,12 +18,13 @@ size_t save_data(FILE *pFile, size_t bytes_received)
     unordered_map<size_t, file_part>::iterator it = window.find(bytes_received);
     while (it != window.end())
     {
-        if( fwrite(it->second.buffer, sizeof(char), it->second.len, pFile) != it->second.len)
+        if (fwrite(it->second.buffer, sizeof(char), it->second.len, pFile) != it->second.len)
             printf("fwrite error\n");
         bytes_received += it->second.len;
         window.erase(it);
         it = window.find(bytes_received);
     }
+//    cout << bytes_received << "\n";
     return bytes_received;
 }
 
@@ -26,21 +33,31 @@ size_t collect_responses(const int fd, const sockaddr_in server_addr, size_t byt
     char buffer[IP_MAXPACKET];
     sockaddr_in sender;
     socklen_t sender_len = sizeof(sender);
-    while (recvfrom(fd, buffer, IP_MAXPACKET, MSG_DONTWAIT, (struct sockaddr *)&sender, &sender_len) > 0)
-    {
-        if (sender.sin_addr.s_addr != server_addr.sin_addr.s_addr or sender.sin_port != server_addr.sin_port)
-            continue;
-        size_t start, len;
-        int matched = sscanf(buffer, "DATA %lu %lu", &start, &len);
-        if (matched != 2)
-            continue;
-        if (start < bytes_received)
-            continue;
 
-        char *data_start = strchr(buffer, '\n') + 1;
-        const auto empl_res = window.emplace(start, file_part(data_start, len));
-        if (empl_res.second)
-            bytes_received = save_data(pFile, bytes_received);
+    fd_set descriptors;
+    FD_ZERO(&descriptors);
+    FD_SET(fd, &descriptors);
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 25000;
+    while (select(fd + 1, &descriptors, NULL, NULL, &tv))
+    {
+        while (recvfrom(fd, buffer, IP_MAXPACKET, MSG_DONTWAIT, (struct sockaddr *)&sender, &sender_len) > 0)
+        {
+            if (sender.sin_addr.s_addr != server_addr.sin_addr.s_addr or sender.sin_port != server_addr.sin_port)
+                continue;
+            size_t start, len;
+            int matched = sscanf(buffer, "DATA %lu %lu", &start, &len);
+            if (matched != 2)
+                continue;
+            if (start < bytes_received)
+                continue;
+
+            char *data_start = strchr(buffer, '\n') + 1;
+            const auto empl_res = window.emplace(start, file_part(data_start, len));
+            if (empl_res.second)
+                bytes_received = save_data(pFile, bytes_received);
+        }
     }
     return bytes_received;
 }
@@ -75,7 +92,7 @@ int main(int argc, char *argv[])
     inet_aton("156.17.4.30", &server_addr.sin_addr);
 
     int fd = init(port);
-    if(fd == -1)
+    if (fd == -1)
         return EXIT_FAILURE;
 
     size_t bytes_received = 0;

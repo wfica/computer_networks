@@ -11,10 +11,6 @@ file_part::file_part(char *data_start, size_t length)
     memcpy(buffer, data_start, length);
 }
 
-int min(int a, int b){
-    return a < b ? a : b;
-}
-
 int init(int port)
 {
 
@@ -48,5 +44,9 @@ void send_queries(const int fd, const sockaddr_in server_addr, int bytes_receive
         int len = min(total_len - start, MX_ALLOWED_LEN);
         string msg = "GET " + to_string(start) + " " + to_string(len) + "\n";
         sendto(fd, msg.c_str(), msg.length(), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        //  if(i < num_queries / 4)
+        //     sendto(fd, msg.c_str(), msg.length(), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        //  if( i < num_queries / 2)
+        //      sendto(fd, msg.c_str(), msg.length(), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
     }
 }
